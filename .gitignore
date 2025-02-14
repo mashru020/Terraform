@@ -3,3 +3,6 @@
 */terraform*
 */.terraform.lock*
 .env
+demo_project/devops/infra/.terraform/
+demo_project/devops/infra/terraform.tfstate
+demo_project/devops/infra/terraform.tfstate.backup

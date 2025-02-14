@@ -4,6 +4,10 @@ variable "cidr_public_subnet" {}
 variable "cidr_private_subnet" {}
 variable "availability_zone" {}
 
+output "dev_proj_1_vpc_id" {
+  value = aws_vpc.dev_proj_1_vpc.id
+}
+
 resource "aws_vpc" "dev_proj_1_vpc" {
   cidr_block = var.vpc_cidr
   tags = {
@@ -22,7 +26,7 @@ resource "aws_subnet" "dev_proj_1_public_subnets" {
     }
 }
 
-resource "aws_subnet" "dev_proj_1_private_subnet" {
+resource "aws_subnet" "dev_proj_1_private_subnets" {
   count = length(var.cidr_private_subnet)
   vpc_id = aws_vpc.dev_proj_1_vpc.id
   cidr_block = element(var.cidr_private_subnet, count.index)
@@ -50,9 +54,21 @@ resource "aws_route_table" "dev_proj_1_public_route_table" {
   }
 }
 
+resource "aws_route_table_association" "dev_proj_1_public_route_table_association" {
+  count = length(aws_subnet.dev_proj_1_public_subnets)
+  subnet_id = aws_subnet.dev_proj_1_public_subnets[count.index].id
+  route_table_id = aws_route_table.dev_proj_1_public_route_table.id
+}
+
 resource "aws_route_table" "dev_porj_1_private_route_table" {
   vpc_id = aws_vpc.dev_proj_1_vpc.id
   tags = {
     Name = "dev-proj-1-private-rt"
   }
+}
+
+resource "aws_route_table_association" "dev_proj_1_private_route_table_association" {
+  count = length(aws_subnet.dev_proj_1_private_subnets)
+  subnet_id = aws_subnet.dev_proj_1_private_subnets[count.index].id
+  route_table_id = aws_route_table.dev_porj_1_private_route_table.id
 }
