@@ -25,3 +25,43 @@ module "jenkins" {
     tags = { Name = "Jenkins:Ubuntu Linux EC2" }
     user_data_install_jenkins = templatefile("./jenkins-runner-script/jenkins-installer.sh", {})
 }
+
+module "lb_target_group" {
+    source = "./load-balancer-target-group"
+    vpc_id = module.networking.dev_proj_1_jenkins_vpc_id
+    target_group_name = "jenkins-lb-target-group"
+    target_group_port = 8080
+    target_group_protocol = "HTTP"
+    ec2_instance_id = module.jenkins.jenkins_ec2_instance_id
+}
+
+module "alb" {
+    source = "./load-balancer"
+    lb_name = "dev-proj-1-alb"
+    is_external = false
+    lb_type = "application"
+    enable_https_ssh = module.security-group.ec2_sg_id
+    subnet_ids = tolist(module.networking.dev_proj_1_jenkins_public_subnet_ids)
+    tag_name = "dev-proj-1-alb"
+    lb_target_group_arn = module.lb_target_group.dev_porj_1_lb_target_group_arn
+    ec2_instance_id = module.jenkins.jenkins_ec2_instance_id
+    lb_listener_port = 80
+    lb_listener_protocol = "HTTP"
+    lb_listener_default_action = "forward"
+    lb_https_listener_port = 443
+    lb_https_listener_protocol = "HTTPS"
+    lb_target_group_attachment_port = 8080
+}
+
+module "hosted_zone" {
+    source = "./hosted-zone"
+    domain_name = "dev-proj-1.com"
+    aws_lb_dns_name = module.alb.alb_dns_name
+    aws_lb_zone_id = module.alb.alb_zone_id
+}
+
+module "aws_certificate_manager" {
+    source = "./certificate-manager"
+    domain_name = "dev-proj-1.com"
+    hosted_zone_id = var.hosted_zone_id
+}
