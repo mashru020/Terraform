@@ -31,3 +31,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+Real_Time_DevOps_Project/Terraform-Jenkins/.terraform
+Real_Time_DevOps_Project/Terraform-Jenkins/.terraform.tfstate.lock.info
+Real_Time_DevOps_Project/DevOps/infra/.terraform

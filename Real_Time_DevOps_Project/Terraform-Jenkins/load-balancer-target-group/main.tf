@@ -21,7 +21,7 @@ resource "aws_lb_target_group" "dev_porj_1_lb_target_group" {
         interval = 5
         healthy_threshold = 6
         unhealthy_threshold = 2
-        matcher = 200
+        matcher = "200"
     }
 }
 
