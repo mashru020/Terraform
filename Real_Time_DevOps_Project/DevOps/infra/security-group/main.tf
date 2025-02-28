@@ -3,6 +3,18 @@ variable "sg_name" {}
 variable "sg_for_python_app" {}
 variable "public_subnet_cidr_blocks" {}
 
+
+output "sg_ssh_https_id" {
+    value = aws_security_group.sg_ssh_https.id
+}
+
+output "sg_for_python_app_id" {
+    value = aws_security_group.sg_python_app.id
+}
+
+output "sg_rds_id" {
+    value = aws_security_group.sg_rds.id
+}
 resource "aws_security_group" "sg_ssh_https" {
   vpc_id = var.vpc_id
     name = var.sg_name
@@ -71,4 +83,23 @@ resource "aws_security_group" "sg_for_rds" {
         cidr_blocks = var.public_subnet_cidr_blocks
     }
 
+}
+
+resource "aws_security_group" "sg_rds" {
+    vpc_id = var.vpc_id
+        name = "SG for RDS"
+        ingress {
+            from_port = 3306
+            to_port = 3306
+            protocol = "tcp"
+            cidr_blocks = var.public_subnet_cidr_blocks
+        }
+    
+        egress {
+            from_port = 0
+            to_port = 0
+            protocol = "-1"
+            cidr_blocks = var.public_subnet_cidr_blocks
+  
+}
 }

@@ -8,6 +8,9 @@ variable "availability_zones" {}
 output "public_subnet_cidr_blocks" {
   value = aws_subnet.app_public_subnet[*].cidr_block
 }
+output "private_subnet_cidr_blocks" {
+  value = aws_subnet.app_private_subnet[*].cidr_block
+}
 output "vpc_id" {
   value = aws_vpc.app_vpc.id
 }
@@ -15,7 +18,10 @@ output "vpc_id" {
 output "public_subnet_ids" {
   value = aws_subnet.app_public_subnet[*].id
 }
-
+output "private_subnet_ids" {
+  value = aws_subnet.app_private_subnet[*].id
+  
+}
 resource "aws_vpc" "app_vpc" {
   cidr_block = var.vpc_cidr
   tags = {
